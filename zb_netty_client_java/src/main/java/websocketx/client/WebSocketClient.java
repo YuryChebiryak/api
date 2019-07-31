@@ -41,16 +41,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.*;
 import com.zb.kits.MapSort;
+//import Gson
 
 public class WebSocketClient {
 	private String url;
 	private EventLoopGroup group;
 	private Channel channel;
 	
-	public final String accessKey = "";
-	public final String secretKey = "";
-	public static String serverUrl = "wss://api.zb.com:9999/websocket";
+	public final String accessKey = "d944140a-1289-49ae-b98e-d692ad062f23";
+	public final String secretKey = "cd200c93-8b2f-4624-9522-b094901d0ea0";
+	//public static String serverUrl = "wss://api.zb.cn:9999/websocket";
+	public static String serverUrl = "wss://api.zb.cn/websocket";
 	public static String payPass = "xxxxxxxxx";
 	
 	public WebSocketClient(String url){
@@ -96,7 +99,16 @@ public class WebSocketClient {
 							new DefaultHttpHeaders())) {
 				@Override
 				public void onReceive(String msg) {
-					System.out.println("channel获取消息：" + msg);
+					System.out.println("channel：" + msg);
+					//need to figure out which message it is, and parse it
+					JSONObject data=JSON.parseObject(msg);
+					JSONArray asks = JSONArray.parseArray(data.getString("asks"));
+					for (int i = 0; i < asks.size() && i < 10; i++) {
+						System.out.println("ask[" + i + "]= " + asks.get(i));
+					}
+					//System.out.println(asks);
+
+
 				}
 			};
 			Bootstrap b = new Bootstrap();
@@ -519,8 +531,8 @@ public class WebSocketClient {
 			try {
 				client.connect();
 				System.out.println("================================"+client.isAlive());
-//				client.addChannel("ltcbtc_ticker");//通过
-//				client.addChannel("ltcbtc_depth");//通过
+				//client.addChannel("ltcbtc_ticker");//通过
+				client.addChannel("ltcbtc_depth");//通过
 //				client.addChannel("ltcbtc_trades");//通过
 				
 //    			client.order( 0.019258, 1, "ethbtc", 0);
@@ -531,7 +543,7 @@ public class WebSocketClient {
 //    			client.getOrdersIgnoreTradeType(1,10 , "ethbtc");
 //    			client.getUnfinishedOrdersIgnoreTradeType(1,10 , "ethbtc");
 //				client.getOrdersNew( 1,10, 1, "ethbtc");
-				client.cancelWithdraw("ethbtc", "20160425916");
+//				client.cancelWithdraw("ethbtc", "20160425916");
 				
 //				client.getAccountInfo();
 			} catch (Exception e) {
